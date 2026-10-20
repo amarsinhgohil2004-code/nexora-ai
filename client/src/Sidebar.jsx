@@ -3,6 +3,9 @@ import { MyContext } from "./MyContext";
 import { useContext, useEffect } from "react";
 import { v1 as uuidv1 } from "uuid";
 import API_URL from "./api";
+import logo from "./assets/nexoraailogo.png";
+
+<img src={logo} alt="Nexora AI" />;
 export default function Sidebar() {
   const {
     allThreads,
@@ -77,11 +80,7 @@ export default function Sidebar() {
   return (
     <section className="sidebar">
       <button onClick={createNewChat}>
-        <img
-          src="src/assets/nexoraailogo.png"
-          alt="nexora ai logo"
-          className="logo"
-        />
+        <img src={logo} alt="nexora ai logo" className="logo" />
         <span>
           <i className="fa-solid fa-pen-to-square"></i>
         </span>
