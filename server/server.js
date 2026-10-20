@@ -13,7 +13,7 @@ app.use(express.json());
 
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://nexora-odovbtae2-nexoraai3.vercel.app",
+    "https://nexora-kos5t2rof-nexoraai3.vercel.app",
     process.env.CLIENT_URL,
 ].filter(Boolean);
 
@@ -22,7 +22,6 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
-
 app.use("/api", chatRoutes);
 
 const ai = new GoogleGenAI({
