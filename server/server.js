@@ -19,8 +19,11 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests without an Origin header
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (
+            !origin ||
+            allowedOrigins.includes(origin) ||
+            /^https:\/\/nexora-[a-z0-9-]+-nexoraai3\.vercel\.app$/.test(origin)
+        ) {
             return callback(null, true);
         }
 
