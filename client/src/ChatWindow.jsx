@@ -3,6 +3,7 @@ import Chat from "./Chat.jsx";
 import { MyContext } from "./MyContext.jsx";
 import { useContext, useState, useEffect } from "react";
 import { ScaleLoader } from "react-spinners";
+import API_URL from "./api";
 export default function ChatWindow() {
   const {
     prompt,
@@ -19,10 +20,11 @@ export default function ChatWindow() {
   const [isOpen, setIsOpen] = useState(true);
 
   const getReply = async () => {
+    if (!prompt.trim() || loading) return;
+
     setLoading(true);
     setNewChat(false);
-    console.log(prompt);
-    console.log(currThreadId);
+
     const option = {
       method: "POST",
       headers: {
@@ -35,14 +37,20 @@ export default function ChatWindow() {
     };
 
     try {
-      const response = await fetch("http://localhost:8080/api/chat", option);
+      const response = await fetch(`${API_URL}/api/chat`, option);
       const res = await response.json();
-      console.log(res);
+
+      if (!response.ok) {
+        throw new Error(res.error || "Failed to get AI response");
+      }
+
       setReply(res.reply);
     } catch (err) {
-      console.log(err);
+      console.error("Chat API error:", err);
+      setReply("Sorry, something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   //append new chat
@@ -82,13 +90,13 @@ export default function ChatWindow() {
       {isOpen && (
         <div className="dropDown">
           <div className="dropDownItems">
-            <i class="fa-solid fa-cloud-arrow-up"></i>Upgrade Plan
+            <i className="fa-solid fa-cloud-arrow-up"></i>Upgrade Plan
           </div>
           <div className="dropDownItems">
-            <i class="fa-solid fa-gear"></i>Settings
+            <i className="fa-solid fa-gear"></i>Settings
           </div>
           <div className="dropDownItems">
-            <i class="fa-solid fa-right-from-bracket"></i>Log Out
+            <i className="fa-solid fa-right-from-bracket"></i>Log Out
           </div>
         </div>
       )}
