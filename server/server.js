@@ -13,11 +13,20 @@ app.use(express.json());
 
 const allowedOrigins = [
     "http://localhost:5173",
+    "https://nexora-ai-zeta-khaki.vercel.app",
     process.env.CLIENT_URL,
 ].filter(Boolean);
 
 app.use(cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+        // Allow requests without an Origin header
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        console.log("CORS blocked origin:", origin);
+        return callback(new Error("Not allowed by CORS"));
+    },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
