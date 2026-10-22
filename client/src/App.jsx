@@ -66,16 +66,17 @@ function App() {
     authChecked,
   };
 
+  r;
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+      <MyContext.Provider value={providerValue}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        <Route
-          path="/"
-          element={
-            <MyContext.Provider value={providerValue}>
+          <Route
+            path="/"
+            element={
               <div className="app">
                 <Sidebar />
                 {isSidebarOpen && (
@@ -88,10 +89,10 @@ function App() {
                 )}
                 <ChatWindow />
               </div>
-            </MyContext.Provider>
-          }
-        />
-      </Routes>
+            }
+          />
+        </Routes>
+      </MyContext.Provider>
     </BrowserRouter>
   );
 }

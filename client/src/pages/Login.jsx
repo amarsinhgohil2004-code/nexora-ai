@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { MyContext } from "../MyContext.jsx";
 import "./Login.css";
 
 export default function Login() {
@@ -7,7 +9,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const { setUser } = useContext(MyContext);
   const navigate = useNavigate();
 
   async function handleLogin(e) {
@@ -34,6 +36,7 @@ export default function Login() {
         throw new Error(data.error || data.message || "Login failed");
       }
 
+      setUser(data.user);
       navigate("/");
     } catch (err) {
       setError(err.message || "Unable to connect. Please try again.");
