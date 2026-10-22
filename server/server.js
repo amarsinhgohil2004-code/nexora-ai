@@ -14,15 +14,12 @@ const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api/auth", authRoutes);
-
 
 const allowedOrigins = [
     "http://localhost:5173",
     "https://nexora-ai-zeta-khaki.vercel.app",
     process.env.CLIENT_URL,
 ].filter(Boolean);
-
 
 app.use(cors({
     origin: (origin, callback) => {
@@ -42,6 +39,8 @@ app.use(cors({
     credentials: true,
 }));
 
+// Mount routes AFTER CORS
+app.use("/api/auth", authRoutes);
 app.use("/api", chatRoutes);
 
 const ai = new GoogleGenAI({
