@@ -14,10 +14,12 @@ export default function ChatWindow() {
     prevChat,
     setPrevChat,
     setNewChat,
+    isSidebarOpen,
+    setIsSidebarOpen,
   } = useContext(MyContext);
 
   const [loading, setLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const getReply = async () => {
     if (!prompt.trim() || loading) return;
@@ -77,16 +79,27 @@ export default function ChatWindow() {
   return (
     <div className="chatWindow">
       <div className="navbar">
-        <span>
+        <button
+          type="button"
+          className="menuButton"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          aria-label="Toggle chat sidebar"
+        >
+          <i className="fa-solid fa-bars"></i>
+        </button>
+
+        <span className="brandName">
           Nexora AI
           <i className="fa-solid fa-chevron-down"></i>
         </span>
+
         <div className="userIconDiv" onClick={handleProfileClick}>
           <span className="userIcon">
             <i className="fa-solid fa-user"></i>
           </span>
         </div>
       </div>
+
       {isOpen && (
         <div className="dropDown">
           <div className="dropDownItems">

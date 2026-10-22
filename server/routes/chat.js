@@ -1,96 +1,150 @@
+
 import express from "express";
 import Thread from "../models/Thread.js";
 import nexoraAIAPIResponse from "../utils/nexoraai.js";
+import requireAuth from "../middleware/requireAuth.js";
+
 const router = express.Router();
 
-//test
-router.post("/test", async (req, res) => {
+// All chat routes below require login
+router.use(requireAuth);
+
+// Get all threads belonging to the logged-in user
+router.get("/thread", async (req, res) => {
     try {
-        const thread = new Thread({
-            threadId: "xyz",
-            title: "testing mongo atlas new db"
+        const threads = await Thread.find({
+            userId: req.userId
+        }).sort({ updatedAt: -1 });
+
+        return res.json(threads);
+    } catch (error) {
+        console.error("Fetch threads error:", error.message);
+        return res.status(500).json({
+            error: "Failed to fetch threads"
         });
-        const response = await thread.save();
-        res.send(response);
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: "failed save data" })
     }
 });
 
-//get all threads
-router.get("/thread", async (req, res) => {
-    try {
-        const threads = await Thread.find({}).sort({ updatedAt: -1 });
-        //decending order of updatedAt... most recent data on top
-        res.json(threads);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Failed to fatch thread" });
-    }
-})
-
-//get specific threads
+// Get one thread belonging to the logged-in user
 router.get("/thread/:threadId", async (req, res) => {
-    const { threadId } = req.params;
     try {
-        const thread = await Thread.findOne({ threadId });
-        //decending order of updatedAt... most recent data on top
+        const thread = await Thread.findOne({
+            threadId: req.params.threadId,
+            userId: req.userId
+        });
+
         if (!thread) {
-            res.status(404).json({ error: "Thread not found" });
+            return res.status(404).json({
+                error: "Thread not found"
+            });
         }
-        res.json(thread);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "threads not found" });
-    }
-})
 
-//delete specific threads
+        return res.json(thread);
+    } catch (error) {
+        console.error("Fetch thread error:", error.message);
+        return res.status(500).json({
+            error: "Failed to fetch thread"
+        });
+    }
+});
+
+// Delete one thread belonging to the logged-in user
 router.delete("/thread/:threadId", async (req, res) => {
-    const { threadId } = req.params;
     try {
-        const deletedThread = await Thread.findOneAndDelete({ threadId });
-        //decending order of updatedAt... most recent data on top
-        if (!deletedThread) {
-            res.status(404).json({ error: "Thread not found and Not delete" });
-        }
-        res.status(200).json({ success: "Thread successfully deleted" });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "threads not found" });
-    }
-})
+        const deletedThread = await Thread.findOneAndDelete({
+            threadId: req.params.threadId,
+            userId: req.userId
+        });
 
-//create chat 
+        if (!deletedThread) {
+            return res.status(404).json({
+                error: "Thread not found"
+            });
+        }
+
+        return res.json({
+            success: "Thread successfully deleted"
+        });
+    } catch (error) {
+        console.error("Delete thread error:", error.message);
+        return res.status(500).json({
+            error: "Failed to delete thread"
+        });
+    }
+});
+
+// Create a new chat or continue the user's own chat
 router.post("/chat", async (req, res) => {
     const { threadId, message } = req.body;
-    if (!threadId || !message) {
-        res.status(400).json({ error: "missing required filled" });
+
+    if (
+        typeof threadId !== "string" ||
+        !threadId.trim() ||
+        typeof message !== "string" ||
+        !message.trim()
+    ) {
+        return res.status(400).json({
+            error: "Thread ID and message are required"
+        });
     }
+
     try {
-        let thread = await Thread.findOne({ threadId });
-        //decending order of updatedAt... most recent data on top
+        let thread = await Thread.findOne({
+            threadId,
+            userId: req.userId
+        });
+
+        // If this ID already belongs to another user,
+        // don't allow this user to access that thread.
         if (!thread) {
+            const existingThread = await Thread.findOne({
+                threadId
+            });
+
+            if (existingThread) {
+                return res.status(404).json({
+                    error: "Thread not found"
+                });
+            }
+
             thread = new Thread({
                 threadId,
-                title: message,
-                message: [{ role: "user", content: message }]
-            })
+                userId: req.userId,
+                title: message.trim().slice(0, 100),
+                message: [{
+                    role: "user",
+                    content: message.trim()
+                }]
+            });
         } else {
-            thread.message.push({ role: "user", content: message });
+            thread.message.push({
+                role: "user",
+                content: message.trim()
+            });
         }
 
-        const assistantReply = await nexoraAIAPIResponse(message);
-        thread.message.push({ role: "assistant", content: assistantReply });
+        const assistantReply = await nexoraAIAPIResponse(
+            message.trim()
+        );
+
+        thread.message.push({
+            role: "assistant",
+            content: assistantReply
+        });
+
         thread.updatedAt = new Date();
 
         await thread.save();
-        res.json({ reply: assistantReply });
+
+        return res.json({
+            reply: assistantReply
+        });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "something went wrong" });
+        console.error("Chat error:", error.message);
+        return res.status(500).json({
+            error: "Something went wrong"
+        });
     }
-})
+});
 
 export default router;

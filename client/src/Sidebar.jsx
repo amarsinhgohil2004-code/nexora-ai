@@ -16,6 +16,8 @@ export default function Sidebar() {
     setReply,
     setCurrThreadId,
     setPrevChat,
+    isSidebarOpen,
+    setIsSidebarOpen,
   } = useContext(MyContext);
 
   const getAllThread = async () => {
@@ -43,6 +45,7 @@ export default function Sidebar() {
     setReply(null);
     setCurrThreadId(uuidv1());
     setPrevChat([]);
+    setIsSidebarOpen(false);
   };
 
   const changeThread = async (newThreadId) => {
@@ -53,6 +56,7 @@ export default function Sidebar() {
       setPrevChat(res.message || []);
       setNewChat(false);
       setReply(null);
+      setIsSidebarOpen(false);
     } catch (err) {
       console.log(err);
     }
@@ -78,7 +82,7 @@ export default function Sidebar() {
     }
   };
   return (
-    <section className="sidebar">
+    <section className={`sidebar ${isSidebarOpen ? "sidebar-open" : ""}`}>
       <button onClick={createNewChat}>
         <img src={logo} alt="nexora ai logo" className="logo" />
         <span>

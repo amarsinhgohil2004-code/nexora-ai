@@ -5,17 +5,24 @@ import "dotenv/config";
 import { GoogleGenAI } from "@google/genai";
 import mongoose from "mongoose";
 import chatRoutes from "./routes/chat.js";
+import cookieParser from "cookie-parser";
+import authRoutes from "./routes/auth.js";
+
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
+app.use(cookieParser());
+app.use("/api/auth", authRoutes);
+
 
 const allowedOrigins = [
     "http://localhost:5173",
     "https://nexora-ai-zeta-khaki.vercel.app",
     process.env.CLIENT_URL,
 ].filter(Boolean);
+
 
 app.use(cors({
     origin: (origin, callback) => {
@@ -32,7 +39,9 @@ app.use(cors({
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
 }));
+
 app.use("/api", chatRoutes);
 
 const ai = new GoogleGenAI({

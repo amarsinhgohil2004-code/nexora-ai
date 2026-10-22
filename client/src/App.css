@@ -1,14 +1,131 @@
-*{
-    color: #ececec;
-    font-family: Roboto,'Open Sans','Helvetica Neue','sans-sarif';
+
+/* Global styles */
+* {
+  box-sizing: border-box;
 }
 
-body{
-    margin: 0;
-    padding: 0;
+:root {
+  --bg-main: #212121;
+  --bg-sidebar: #171717;
+  --bg-card: #323232;
+  --text-primary: #ececec;
+  --text-secondary: #b4b4b4;
+  --accent: #339cff;
+  --danger: #f87171;
+  --border-subtle: rgba(180, 180, 180, 0.12);
+  --hover-bg: rgba(180, 180, 180, 0.08);
 }
 
-.app{
-    background-color: #212121;
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: Roboto, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+button,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  background-color: var(--bg-main);
+}
+
+
+/* Mobile sidebar overlay */
+@media (max-width: 600px) {
+  .app {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .sidebar {
     display: flex;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1001;
+    width: min(280px, 85vw);
+    min-width: 0;
+    height: 100vh;
+    height: 100dvh;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: none;
+  }
+
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .chatWindow {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .menuButton {
+    display: flex;
+  }
+}
+
+/* Desktop: sidebar stays visible */
+@media (min-width: 601px) {
+  .sidebar {
+    display: flex;
+    position: relative;
+    transform: none;
+  }
+
+  .menuButton {
+    display: none;
+  }
+}
+
+
+.sidebarBackdrop {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .sidebarBackdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: none;
+    background: rgba(0, 0, 0, 0.55);
+    cursor: pointer;
+  }
+
+  .sidebar {
+    z-index: 1001;
+  }
 }
