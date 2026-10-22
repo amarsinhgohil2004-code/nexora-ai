@@ -66,7 +66,6 @@ function App() {
     authChecked,
   };
 
-  r;
   return (
     <BrowserRouter>
       <MyContext.Provider value={providerValue}>
