@@ -249,3 +249,89 @@
     display: flex;
   }
 }
+
+.navbarAuth {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.authNavButton {
+  padding: 8px 14px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.registerNavButton {
+  background: var(--text-primary);
+  color: var(--bg-main);
+}
+
+
+.loginPromptOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.loginPrompt {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  padding: 28px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  background: #252525;
+  color: #ececec;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.loginPrompt h3 {
+  color: #ececec;
+  margin-bottom: 12px;
+}
+
+.loginPrompt p {
+  color: #b4b4b4;
+  line-height: 1.5;
+}
+
+.loginPrompt button {
+  margin: 8px 4px 0;
+  padding: 10px 16px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background: #3a3a3a;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.loginPrompt button:hover {
+  background: #4a4a4a;
+}
+
+.loginPrompt .closePrompt {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  margin: 0;
+  padding: 2px 8px;
+  border: none;
+  background: transparent;
+  color: #b4b4b4;
+  font-size: 24px;
+}
+
+.loginPrompt .closePrompt:hover {
+  background: #3a3a3a;
+  color: #ffffff;
+}

@@ -2,12 +2,13 @@ import "./App.css";
 import Sidebar from "./Sidebar.jsx";
 import ChatWindow from "./ChatWindow.jsx";
 import { MyContext } from "./MyContext.jsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { v1 as uuidv1 } from "uuid";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
+import API_URL from "./api";
 
 function App() {
   const [prompt, setPrompt] = useState("");
@@ -17,6 +18,33 @@ function App() {
   const [newChat, setNewChat] = useState(true);
   const [allThreads, setallThreads] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/auth/me`, {
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Authentication check failed:", error);
+        setUser(null);
+      } finally {
+        setAuthChecked(true);
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   const providerValue = {
     prompt,
@@ -33,6 +61,9 @@ function App() {
     setallThreads,
     isSidebarOpen,
     setIsSidebarOpen,
+    user,
+    setUser,
+    authChecked,
   };
 
   return (

@@ -3,6 +3,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import requireAuth from "../middleware/requireAuth.js";
 
 const router = express.Router();
 
@@ -13,6 +14,20 @@ const createToken = (userId) => {
         { expiresIn: "1d" }
     );
 };
+
+router.get("/me", requireAuth, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).select("-password");
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.json({ user });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to get user" });
+    }
+});
 
 // REGISTER
 router.post("/register", async (req, res) => {

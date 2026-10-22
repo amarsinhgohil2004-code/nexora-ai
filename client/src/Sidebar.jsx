@@ -22,13 +22,20 @@ export default function Sidebar() {
 
   const getAllThread = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/thread`);
+      const response = await fetch(`${API_URL}/api/thread`, {
+        credentials: "include",
+      });
       const res = await response.json();
+
+      if (!response.ok) {
+        throw new Error(res.error || "Failed to load chats");
+      }
+
       const filterData = res.map((thread) => ({
         threadId: thread.threadId,
         title: thread.title,
       }));
-      // console.log(filterData);
+
       setallThreads(filterData);
     } catch (err) {
       console.log(err);
@@ -51,7 +58,9 @@ export default function Sidebar() {
   const changeThread = async (newThreadId) => {
     setCurrThreadId(newThreadId);
     try {
-      const response = await fetch(`${API_URL}/api/thread/${newThreadId}`);
+      const response = await fetch(`${API_URL}/api/thread/${newThreadId}`, {
+        credentials: "include",
+      });
       const res = await response.json();
       setPrevChat(res.message || []);
       setNewChat(false);
@@ -66,6 +75,7 @@ export default function Sidebar() {
     try {
       const response = await fetch(`${API_URL}/api/thread/${threadId}`, {
         method: "DELETE",
+        credentials: "include",
       });
       const res = await response.json();
 
